@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">One Sec</string>
+    <string name="accessibility_service_label">One Sec – App Watcher</string>
+    <string name="accessibility_service_desc">Detects when you open a guarded app and shows a mindful pause.</string>
+
+    <!-- Main UI -->
+    <string name="setup_title">one sec</string>
+    <string name="setup_subtitle">pause before you scroll</string>
+    <string name="btn_add_app">+ Add App</string>
+    <string name="btn_enable_service">Enable Accessibility</string>
+    <string name="btn_service_enabled">✓ Service Active</string>
+    <string name="accessibility_help_title">Enable Accessibility Service</string>
+    <string name="accessibility_help_message">If your phone shows "Restricted setting", open App info for One Sec, tap the menu, and allow restricted settings. Then return and enable One Sec in Accessibility.</string>
+    <string name="accessibility_help_open_app_info">Open App Info</string>
+    <string name="accessibility_help_open_accessibility">Open Accessibility</string>
+    <string name="btn_enable_overlay">Enable Overlay</string>
+    <string name="btn_overlay_enabled">✓ Overlay Active</string>
+    <string name="no_apps_hint">No apps guarded yet.\nTap + to add one.</string>
+    <string name="stats_format" formatted="false">%d pauses today  ·  %d skipped</string>
+
+    <!-- Intervention -->
+    <string name="intervention_title">Hold on…</string>
+    <string name="intervention_breathe">Take a breath</string>
+    <string name="intervention_question">Do you really want to open this?</string>
+    <string name="btn_open_anyway">Open anyway</string>
+    <string name="btn_go_back">← Go back</string>
+    <string name="btn_skip">Skip</string>
+
+    <!-- Reasons -->
+    <string name="reason_bored">Bored</string>
+    <string name="reason_procrastinating">Procrastinating</string>
+    <string name="reason_escape">Escape</string>
+    <string name="reason_habits">Just habit</string>
+    <string name="reason_intentional">Intentional use</string>
+</resources>

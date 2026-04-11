@@ -1,0 +1,153 @@
+package com.onesec.app
+
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.provider.Settings
+import android.view.View
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var tvStats: TextView
+    private lateinit var layoutPermissions: LinearLayout
+    private lateinit var btnAccessibility: Button
+    private lateinit var btnOverlay: Button
+    private lateinit var btnAddApp: Button
+    private lateinit var tvNoApps: TextView
+    private lateinit var recyclerApps: RecyclerView
+    private lateinit var guardedAdapter: GuardedAppsAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        tvStats = findViewById(R.id.tvStats)
+        layoutPermissions = findViewById(R.id.layoutPermissions)
+        btnAccessibility = findViewById(R.id.btnAccessibility)
+        btnOverlay = findViewById(R.id.btnOverlay)
+        btnAddApp = findViewById(R.id.btnAddApp)
+        tvNoApps = findViewById(R.id.tvNoApps)
+        recyclerApps = findViewById(R.id.recyclerApps)
+
+        setupRecycler()
+        setupButtons()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshPermissionState()
+        refreshAppsList()
+        refreshStats()
+    }
+
+    private fun setupRecycler() {
+        guardedAdapter = GuardedAppsAdapter(this) { pkg ->
+            AppPrefs.removeGuardedPackage(this, pkg)
+            refreshAppsList()
+        }
+        recyclerApps.layoutManager = LinearLayoutManager(this)
+        recyclerApps.adapter = guardedAdapter
+    }
+
+    private fun setupButtons() {
+        btnAccessibility.setOnClickListener {
+            if (isAccessibilityEnabled()) return@setOnClickListener
+
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.accessibility_help_title))
+                .setMessage(getString(R.string.accessibility_help_message))
+                .setPositiveButton(getString(R.string.accessibility_help_open_app_info)) { _, _ ->
+                    val intent = Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:$packageName")
+                    )
+                    startActivity(intent)
+                }
+                .setNegativeButton(getString(R.string.accessibility_help_open_accessibility)) { _, _ ->
+                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
+                .show()
+        }
+
+        btnOverlay.setOnClickListener {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:$packageName")
+            )
+            startActivity(intent)
+        }
+
+        btnAddApp.setOnClickListener {
+            startActivity(Intent(this, AppPickerActivity::class.java))
+        }
+    }
+
+    private fun refreshPermissionState() {
+        val accessibilityOk = isAccessibilityEnabled()
+        val overlayOk = Settings.canDrawOverlays(this)
+        val allOk = accessibilityOk && overlayOk
+
+        layoutPermissions.visibility = if (allOk) View.GONE else View.VISIBLE
+
+        if (!accessibilityOk) {
+            btnAccessibility.visibility = View.VISIBLE
+            btnAccessibility.text = getString(R.string.btn_enable_service)
+            btnAccessibility.isEnabled = true
+        } else {
+            btnAccessibility.visibility = View.VISIBLE
+            btnAccessibility.text = getString(R.string.btn_service_enabled)
+            btnAccessibility.isEnabled = false
+        }
+
+        if (!overlayOk) {
+            btnOverlay.visibility = View.VISIBLE
+            btnOverlay.text = getString(R.string.btn_enable_overlay)
+            btnOverlay.isEnabled = true
+        } else {
+            btnOverlay.visibility = View.VISIBLE
+            btnOverlay.text = getString(R.string.btn_overlay_enabled)
+            btnOverlay.isEnabled = false
+        }
+    }
+
+    private fun refreshAppsList() {
+        val packages = AppPrefs.getGuardedPackages(this)
+        if (packages.isEmpty()) {
+            tvNoApps.visibility = View.VISIBLE
+            recyclerApps.visibility = View.GONE
+        } else {
+            tvNoApps.visibility = View.GONE
+            recyclerApps.visibility = View.VISIBLE
+            guardedAdapter.setPackages(packages.toList())
+        }
+    }
+
+    private fun refreshStats() {
+        val pauses = AppPrefs.getTodayTotalPauses(this)
+        val skipped = AppPrefs.getTodayTotalSkipped(this)
+        if (pauses > 0) {
+            tvStats.text = String.format("%d pauses today  ·  %d opened", pauses, skipped)
+        } else {
+            tvStats.text = ""
+        }
+    }
+
+    private fun isAccessibilityEnabled(): Boolean {
+        return try {
+            val enabled = Settings.Secure.getString(
+                contentResolver,
+                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+            )
+            enabled?.contains(packageName) == true
+        } catch (e: Exception) {
+            false
+        }
+    }
+}
