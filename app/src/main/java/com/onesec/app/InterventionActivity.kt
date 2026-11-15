@@ -29,12 +29,23 @@ class InterventionActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_PACKAGE = "pkg"
+
+        /**
+         * Package whose pause is in progress (showing, or covered by the app),
+         * or null once the user has chosen "go back" or "open anyway".
+         */
+        @Volatile
+        var pendingPackage: String? = null
     }
 
     private val handler = Handler(Looper.getMainLooper())
     private var countdownSeconds = 5
     private var selectedReason: String? = null
     private lateinit var targetPackage: String
+
+    // Set when the pause screen gets hidden before the user decides, so the
+    // countdown starts over instead of finishing in the background
+    private var restartOnStart = false
 
     // Views - Breathe phase
     private lateinit var layoutBreathe: LinearLayout
@@ -70,12 +81,45 @@ class InterventionActivity : AppCompatActivity() {
             finish()
             return
         }
+        pendingPackage = targetPackage
 
         bindViews()
         setupAppInfo()
         setupChips()
         setupButtons()
         startBreathingPhase()
+    }
+
+    // singleTask: the service re-launching us lands here, not in onCreate
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        val pkg = intent.getStringExtra(EXTRA_PACKAGE) ?: return
+        pendingPackage = pkg
+        if (pkg != targetPackage) {
+            targetPackage = pkg
+            setupAppInfo()
+            restartBreathingPhase()
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (restartOnStart) {
+            restartOnStart = false
+            restartBreathingPhase()
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Covered by the guarded app (e.g. opened from a link) or the user
+        // pressed Home: don't let the countdown run out unseen.
+        if (!isFinishing && !isChangingConfigurations) {
+            cancelCountdown()
+            breathAnimator?.cancel()
+            restartOnStart = true
+        }
     }
 
     private fun bindViews() {
@@ -143,6 +187,7 @@ class InterventionActivity : AppCompatActivity() {
             // User chose to open the app anyway
             AppPrefs.recordSkipped(this, targetPackage)
             AppPrefs.setOpenAnywayPackage(this, targetPackage)
+            pendingPackage = null
             openTargetApp()
         }
     }
@@ -157,6 +202,22 @@ class InterventionActivity : AppCompatActivity() {
         startBreathAnimation()
         vibrateSoft()
         startCountdown()
+    }
+
+    private fun restartBreathingPhase() {
+        cancelCountdown()
+        breathAnimator?.cancel()
+        layoutDecide.animate().cancel()
+
+        selectedReason = null
+        allChips.forEach { chip ->
+            chip.setBackgroundResource(R.drawable.bg_chip)
+            chip.setTextColor(getColor(R.color.text_secondary))
+        }
+        layoutDecide.visibility = View.GONE
+        layoutBreathe.visibility = View.VISIBLE
+
+        startBreathingPhase()
     }
 
     private fun startBreathAnimation() {
@@ -228,6 +289,7 @@ class InterventionActivity : AppCompatActivity() {
     // ---- Navigation ----
 
     private fun goHome() {
+        pendingPackage = null
         val homeIntent = Intent(Intent.ACTION_MAIN).apply {
             addCategory(Intent.CATEGORY_HOME)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK

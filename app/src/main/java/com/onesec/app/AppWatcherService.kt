@@ -16,11 +16,6 @@ import android.view.accessibility.AccessibilityEvent
  */
 class AppWatcherService : AccessibilityService() {
 
-    // Track the last package we triggered on to avoid double-firing
-    private var lastTriggeredPackage: String? = null
-    private var lastTriggeredTime: Long = 0L
-    private val DEBOUNCE_MS = 1500L
-
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event?.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) return
 
@@ -43,18 +38,19 @@ class AppWatcherService : AccessibilityService() {
         if (pkg == "com.android.systemui") return
         if (pkg == "android") return
 
-        // Debounce: don't re-trigger same app within cooldown window
-        val now = System.currentTimeMillis()
-        if (pkg == lastTriggeredPackage && (now - lastTriggeredTime) < DEBOUNCE_MS) return
-
         // Check if this package is guarded
         if (!AppPrefs.isGuarded(this, pkg)) return
 
-        // Record the attempt
-        AppPrefs.recordPause(this, pkg)
-
-        lastTriggeredPackage = pkg
-        lastTriggeredTime = now
+        // If a pause for this app is already in progress, the app has pushed a
+        // window on top of it. Links do this: the app's link-handler activity
+        // shows up first, then starts the real screen a moment later (after we
+        // already launched the pause). Never ignore that second window, or the
+        // app covers the pause and opens without waiting. Bring the pause back
+        // instead, without counting it as a new attempt.
+        if (InterventionActivity.pendingPackage != pkg) {
+            AppPrefs.recordPause(this, pkg)
+            InterventionActivity.pendingPackage = pkg
+        }
 
         // Launch intervention overlay
         val intent = Intent(this, InterventionActivity::class.java).apply {
