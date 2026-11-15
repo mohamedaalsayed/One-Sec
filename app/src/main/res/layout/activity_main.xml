@@ -73,6 +73,83 @@
 
         </LinearLayout>
 
+        <!-- Quick check length -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/quick_check_setting_label"
+            android:textColor="@color/text_hint"
+            android:textSize="10sp"
+            android:letterSpacing="0.15"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Filled with one chip per allowed length in MainActivity -->
+        <LinearLayout
+            android:id="@+id/layoutQuickCheckMinutes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+
+        <!-- Things to do instead, suggested before a scroll session -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/alternatives_setting_label"
+            android:textColor="@color/text_hint"
+            android:textSize="10sp"
+            android:letterSpacing="0.15"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Filled in MainActivity; tap one to remove it -->
+        <LinearLayout
+            android:id="@+id/layoutAlternatives"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/etAlternative"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_chip"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="10dp"
+                android:hint="@string/alternatives_hint"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btnAddAlternative"
+                style="@style/Btn.Ghost"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:minHeight="0dp"
+                android:paddingTop="0dp"
+                android:paddingBottom="0dp"
+                android:paddingHorizontal="16dp"
+                android:text="@string/btn_add_alternative"
+                android:textSize="13sp" />
+
+        </LinearLayout>
+
         <!-- Divider -->
         <View
             android:layout_width="match_parent"

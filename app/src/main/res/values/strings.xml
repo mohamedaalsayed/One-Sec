@@ -26,6 +26,56 @@
     <string name="btn_open_anyway">Open anyway</string>
     <string name="btn_go_back">← Go back</string>
     <string name="btn_skip">Skip</string>
+    <string name="pause_title_top">Do you really</string>
+    <string name="pause_title_bottom">want to open this?</string>
+
+    <!-- Opened from a link someone sent -->
+    <string name="tag_from_app">from %1$s</string>
+    <string name="link_title_top">Someone sent you this.</string>
+    <string name="link_title_bottom">Watch it, then head back.</string>
+    <string name="btn_watch_one">Watch just this one</string>
+    <string name="btn_back_to">Back to %1$s</string>
+    <string name="checkin_title_top">That was the one.</string>
+    <string name="checkin_title_bottom">Back to %1$s?</string>
+    <string name="btn_keep_scrolling">Keep scrolling</string>
+
+    <!-- Quick check -->
+    <string name="btn_quick_check">Quick check · %1$d min</string>
+    <string name="quick_tag_first">quick check</string>
+    <string name="quick_tag_count">quick check #%1$d today</string>
+    <string name="quick_title_top">Is it that</string>
+    <string name="quick_title_bottom">important?</string>
+    <string name="quick_reason_hint">What are you checking?</string>
+    <string name="btn_quick_no">No, go back</string>
+    <string name="btn_quick_yes">Yes, %1$d minutes</string>
+    <string name="btn_quick_yes_wait">Yes, %1$d minutes (%2$d)</string>
+    <string name="timeup_tag">quick check · %1$d min</string>
+    <string name="timeup_title_top">Time\'s up.</string>
+    <string name="timeup_title_bottom">Got what you needed?</string>
+    <string name="btn_done">Done</string>
+    <string name="btn_more_time">I need more time</string>
+
+    <!-- Scroll session -->
+    <string name="btn_scroll_session">I just want to scroll · %1$d min</string>
+    <string name="btn_scroll_cooldown">Next scroll session at %1$s</string>
+    <string name="scroll_end_tag">scroll session · %1$d min</string>
+    <string name="scroll_end_title_top">%1$d minutes are up.</string>
+    <string name="scroll_end_title_bottom">How do you feel?</string>
+    <string name="btn_im_done">I\'m done</string>
+    <string name="scroll_confirm_tag">scroll session #%1$d today · next one at %2$s</string>
+    <string name="scroll_confirm_title_top">Before you scroll,</string>
+    <string name="scroll_confirm_title_bottom">how about…</string>
+    <string name="btn_scroll_confirm">Scroll for %1$d min</string>
+    <string name="btn_scroll_confirm_wait">Scroll for %1$d min (%2$d)</string>
+    <string name="alternatives_setting_label">INSTEAD OF SCROLLING</string>
+    <string name="alternatives_hint">Add something you\'d rather do</string>
+    <string name="alternatives_full_hint">Up to %1$d. Remove one to add another</string>
+    <string name="btn_add_alternative">Add</string>
+    <string name="btn_keep_going">Keep going</string>
+
+    <!-- Main screen -->
+    <string name="quick_check_setting_label">QUICK CHECK LENGTH</string>
+    <string name="quick_check_minutes_chip">%1$d min</string>
 
     <!-- Reasons -->
     <string name="reason_bored">Bored</string>

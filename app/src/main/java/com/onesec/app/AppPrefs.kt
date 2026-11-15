@@ -14,11 +14,33 @@ object AppPrefs {
     private const val KEY_TODAY_DATE = "today_date"
     private const val KEY_TODAY_PAUSES = "today_pauses"
     private const val KEY_TODAY_SKIPPED = "today_skipped"
-    private const val KEY_OPEN_ANYWAY_PACKAGE = "open_anyway_package"
+    private const val KEY_ALLOWED_PACKAGE = "open_anyway_package"
+    private const val KEY_QUICK_CHECK_MINUTES = "quick_check_minutes"
+    private const val KEY_SCROLL_SESSION_END = "scroll_session_end"
+    private const val KEY_ALTERNATIVES = "alternatives"
+    const val MAX_ALTERNATIVES = 5
+
+    // Shown before a scroll session until the user writes their own
+    private val DEFAULT_ALTERNATIVES = setOf(
+        "Go for a walk", "Read 10 pages", "Text a friend", "Stretch for 5 minutes"
+    )
+
+    const val QUICK_CHECK_MIN_MINUTES = 2
+    const val QUICK_CHECK_MAX_MINUTES = 5
+    private const val QUICK_CHECK_DEFAULT_MINUTES = 3
 
     // Per-package stats stored as "pkg_pauses_<date>" and "pkg_skipped_<date>"
     private fun pauseKey(pkg: String, date: String) = "p_${pkg}_$date"
     private fun skipKey(pkg: String, date: String) = "s_${pkg}_$date"
+
+    // Daily totals for links someone sent: watched "just this one", and how
+    // many of those turned into "keep scrolling"
+    private fun linksKey(date: String) = "links_$date"
+    private fun keptScrollingKey(date: String) = "kept_$date"
+
+    // Quick checks and scroll sessions used, per limit day (see limitDayStr)
+    private fun quickChecksKey(day: String) = "qc_$day"
+    private fun scrollSessionsKey(day: String) = "scroll_count_$day"
 
     private fun prefs(ctx: Context): SharedPreferences =
         ctx.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -44,24 +66,85 @@ object AppPrefs {
     fun isGuarded(ctx: Context, pkg: String): Boolean =
         getGuardedPackages(ctx).contains(pkg)
 
-    // ---- Open-anyway bypass ----
+    // ---- Per-app access (quick check, "just this one") ----
+    // Lets one guarded app through until the user switches to another app,
+    // the screen goes off, or its timer runs out
 
-    fun setOpenAnywayPackage(ctx: Context, pkg: String) {
-        prefs(ctx).edit().putString(KEY_OPEN_ANYWAY_PACKAGE, pkg).apply()
+    fun setAllowedPackage(ctx: Context, pkg: String) {
+        prefs(ctx).edit().putString(KEY_ALLOWED_PACKAGE, pkg).apply()
     }
 
-    fun getOpenAnywayPackage(ctx: Context): String? {
-        return prefs(ctx).getString(KEY_OPEN_ANYWAY_PACKAGE, null)
+    fun getAllowedPackage(ctx: Context): String? {
+        return prefs(ctx).getString(KEY_ALLOWED_PACKAGE, null)
     }
 
-    fun clearOpenAnywayPackage(ctx: Context) {
-        prefs(ctx).edit().remove(KEY_OPEN_ANYWAY_PACKAGE).apply()
+    fun clearAllowedPackage(ctx: Context) {
+        prefs(ctx).edit().remove(KEY_ALLOWED_PACKAGE).apply()
     }
+
+    // ---- Quick check ----
+
+    fun getQuickCheckMinutes(ctx: Context): Int =
+        prefs(ctx).getInt(KEY_QUICK_CHECK_MINUTES, QUICK_CHECK_DEFAULT_MINUTES)
+            .coerceIn(QUICK_CHECK_MIN_MINUTES, QUICK_CHECK_MAX_MINUTES)
+
+    fun setQuickCheckMinutes(ctx: Context, minutes: Int) {
+        prefs(ctx).edit().putInt(KEY_QUICK_CHECK_MINUTES, minutes).apply()
+    }
+
+    fun getQuickChecksToday(ctx: Context): Int =
+        prefs(ctx).getInt(quickChecksKey(limitDayStr()), 0)
+
+    fun recordQuickCheck(ctx: Context) {
+        val p = prefs(ctx)
+        val key = quickChecksKey(limitDayStr())
+        p.edit().putInt(key, p.getInt(key, 0) + 1).apply()
+    }
+
+    // ---- Scroll session ----
+
+    /** Wall-clock end of the latest scroll session, or 0 if there's never been one. */
+    fun getScrollSessionEnd(ctx: Context): Long =
+        prefs(ctx).getLong(KEY_SCROLL_SESSION_END, 0L)
+
+    fun getScrollSessionsToday(ctx: Context): Int =
+        prefs(ctx).getInt(scrollSessionsKey(limitDayStr()), 0)
+
+    fun recordScrollSession(ctx: Context, endsAt: Long) {
+        val p = prefs(ctx)
+        val key = scrollSessionsKey(limitDayStr())
+        p.edit()
+            .putLong(KEY_SCROLL_SESSION_END, endsAt)
+            .putInt(key, p.getInt(key, 0) + 1)
+            .apply()
+    }
+
+    // ---- Things to do instead of scrolling ----
+
+    /** The user's list, or the defaults if they've never edited it. */
+    fun getAlternatives(ctx: Context): Set<String> =
+        prefs(ctx).getStringSet(KEY_ALTERNATIVES, null) ?: DEFAULT_ALTERNATIVES
+
+    fun setAlternatives(ctx: Context, alternatives: Set<String>) {
+        prefs(ctx).edit().putStringSet(KEY_ALTERNATIVES, alternatives).apply()
+    }
+
+    /** What to suggest; the defaults if the user emptied the list. */
+    fun getAlternativesToSuggest(ctx: Context): List<String> =
+        getAlternatives(ctx).ifEmpty { DEFAULT_ALTERNATIVES }.sorted().take(MAX_ALTERNATIVES)
 
     // ---- Daily stats ----
 
     private fun todayStr(): String {
         val cal = java.util.Calendar.getInstance()
+        return "${cal.get(java.util.Calendar.YEAR)}-${cal.get(java.util.Calendar.DAY_OF_YEAR)}"
+    }
+
+    // Limits reset at 4 AM rather than midnight, so late-night scrolling
+    // counts as the same night
+    private fun limitDayStr(): String {
+        val cal = java.util.Calendar.getInstance()
+        cal.add(java.util.Calendar.HOUR_OF_DAY, -4)
         return "${cal.get(java.util.Calendar.YEAR)}-${cal.get(java.util.Calendar.DAY_OF_YEAR)}"
     }
 
@@ -78,6 +161,24 @@ object AppPrefs {
         val key = skipKey(pkg, today)
         p.edit().putInt(key, p.getInt(key, 0) + 1).apply()
     }
+
+    fun recordLinkWatched(ctx: Context) {
+        val p = prefs(ctx)
+        val key = linksKey(todayStr())
+        p.edit().putInt(key, p.getInt(key, 0) + 1).apply()
+    }
+
+    fun recordKeptScrolling(ctx: Context) {
+        val p = prefs(ctx)
+        val key = keptScrollingKey(todayStr())
+        p.edit().putInt(key, p.getInt(key, 0) + 1).apply()
+    }
+
+    fun getTodayLinksWatched(ctx: Context): Int =
+        prefs(ctx).getInt(linksKey(todayStr()), 0)
+
+    fun getTodayKeptScrolling(ctx: Context): Int =
+        prefs(ctx).getInt(keptScrollingKey(todayStr()), 0)
 
     /** Total pauses across all apps today */
     fun getTodayTotalPauses(ctx: Context): Int {

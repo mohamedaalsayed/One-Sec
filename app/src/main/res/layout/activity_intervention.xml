@@ -111,9 +111,9 @@
         android:paddingHorizontal="28dp"
         android:visibility="gone">
 
-        <!-- Attempt count -->
+        <!-- Attempt count, or the app a link came from -->
         <TextView
-            android:id="@+id/tvAttemptCount"
+            android:id="@+id/tvDecideTag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
@@ -127,133 +127,178 @@
             android:text="3 times today" />
 
         <TextView
+            android:id="@+id/tvTitleTop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Do you really"
+            android:text="@string/pause_title_top"
             android:textColor="@color/text_primary"
             android:textSize="28sp"
             android:fontFamily="sans-serif-light" />
 
         <TextView
+            android:id="@+id/tvTitleBottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
-            android:text="want to open this?"
+            android:text="@string/pause_title_bottom"
             android:textColor="@color/text_primary"
             android:textSize="28sp"
             android:fontFamily="sans-serif-light" />
 
-        <!-- Reason chips -->
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Reason chips (normal pause only) -->
+        <LinearLayout
+            android:id="@+id/layoutReasons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="WHY?"
+                android:textColor="@color/text_hint"
+                android:textSize="10sp"
+                android:letterSpacing="0.15"
+                android:fontFamily="sans-serif-medium" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/chipBored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="Bored"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/chipHabit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="Just habit"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/chipEscape"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="Escape"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="48dp">
+
+                <TextView
+                    android:id="@+id/chipProcrastinate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_chip"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="Procrastinating"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+                <TextView
+                    android:id="@+id/chipIntentional"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chip"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="8dp"
+                    android:text="Intentional"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:clickable="true"
+                    android:focusable="true" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Quick check, from the 5th of the day: say what you're checking -->
+        <EditText
+            android:id="@+id/etQuickReason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/bg_chip"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
+            android:hint="@string/quick_reason_hint"
+            android:inputType="textCapSentences"
+            android:maxLines="1"
+            android:importantForAutofill="no"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+        <!-- Scroll confirmation: one button per thing to do instead -->
+        <LinearLayout
+            android:id="@+id/layoutAlternativeButtons"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            android:text="WHY?"
-            android:textColor="@color/text_hint"
-            android:textSize="10sp"
-            android:letterSpacing="0.15"
-            android:fontFamily="sans-serif-medium" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:id="@+id/chipBored"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_chip"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:text="Bored"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/chipHabit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_chip"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:text="Just habit"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/chipEscape"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_chip"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:text="Escape"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:clickable="true"
-                android:focusable="true" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="48dp">
-
-            <TextView
-                android:id="@+id/chipProcrastinate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_chip"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:text="Procrastinating"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:clickable="true"
-                android:focusable="true" />
-
-            <TextView
-                android:id="@+id/chipIntentional"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_chip"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:text="Intentional"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp"
-                android:clickable="true"
-                android:focusable="true" />
-
-        </LinearLayout>
+            android:orientation="vertical"
+            android:visibility="gone" />
 
         <!-- Action buttons -->
         <Button
-            android:id="@+id/btnGoBack"
+            android:id="@+id/btnPrimary"
             style="@style/Btn.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="← Go back"
+            android:text="@string/btn_go_back"
             android:layout_marginBottom="12dp"/>
 
         <Button
-            android:id="@+id/btnOpenAnyway"
+            android:id="@+id/btnSecondary"
             style="@style/Btn.Ghost"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open anyway" />
+            android:text="@string/btn_open_anyway" />
+
+        <Button
+            android:id="@+id/btnTertiary"
+            style="@style/Btn.Ghost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone" />
 
     </LinearLayout>
 

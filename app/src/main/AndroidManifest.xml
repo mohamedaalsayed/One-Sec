@@ -2,11 +2,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Allow querying launchable apps for picker list on Android 11+ -->
+    <!-- Allow querying launchable apps for picker list on Android 11+,
+         plus home screens and keyboards so app switches can be told apart -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+        </intent>
+        <intent>
+            <action android:name="android.view.InputMethod" />
         </intent>
     </queries>
 
@@ -47,6 +55,7 @@
             android:name=".InterventionActivity"
             android:exported="false"
             android:excludeFromRecents="true"
+            android:taskAffinity=""
             android:screenOrientation="portrait"
             android:theme="@style/Theme.OneSec.Overlay"
             android:launchMode="singleTask"

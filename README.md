@@ -10,8 +10,27 @@ No tracking. No ads. No internet permission. All data stays on-device.
 
 1. You add apps you want to guard (Instagram, TikTok, etc.)
 2. Whenever you open one, a full-screen breathing countdown appears (5 seconds)
-3. After the breath, you decide: go back, or open anyway
-4. Stats show how many times you paused vs. opened anyway
+3. After the breath, you decide:
+   - **Go back**
+   - **Quick check** (2–5 min, set on the main screen): asks "Is it that
+     important?" first. From the 3rd quick check of the day "yes" stays locked
+     for 10 seconds, from the 5th you also type what you're checking. When the
+     time's up you're asked whether you got what you needed.
+   - **I just want to scroll**: 30 minutes shared by every guarded app, counted
+     in real time even while you're out of them. Before it starts you see your
+     own list of things you'd rather do (up to 5) and when the next session
+     would unlock; "scroll" stays locked for 5 seconds. Each session is followed
+     by a growing cooldown (1h, then 3h, 5h, 7h...). Limits reset at 4 AM.
+4. Stats show pauses, quick checks, scroll sessions and links watched
+
+**Links someone sent you.** If a guarded app opens from another app (say a
+reel link in WhatsApp) instead of from the home screen, the pause is shorter
+and offers **Watch just this one**. The moment you swipe on to the next reel or
+scroll past the post, or after 90 seconds, a check-in offers to take you back
+to the chat. Choosing **Keep scrolling** sends you through the full pause.
+
+Locking the phone ends a quick check or "just this one"; unlocking back into a
+guarded app pauses it again.
 
 Uses Android's **AccessibilityService** to detect foreground app changes — same
 mechanism as the original one sec. Zero battery drain (event-driven, not polling).
