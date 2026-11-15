@@ -32,6 +32,9 @@ to the chat. Choosing **Keep scrolling** sends you through the full pause.
 Locking the phone ends a quick check or "just this one"; unlocking back into a
 guarded app pauses it again.
 
+There's also a **browser extension** with the same features for Chromium-based
+browsers and Firefox: see [`extension/`](extension/README.md).
+
 Uses Android's **AccessibilityService** to detect foreground app changes — same
 mechanism as the original one sec. Zero battery drain (event-driven, not polling).
 

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>One Sec</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>one sec</h1>
+  <p class="subtitle">pause before you scroll</p>
+  <p id="stats" class="stats"></p>
+
+  <!-- Firefox asks for site access separately from installing -->
+  <button id="grant" class="primary" hidden>Allow One Sec on your sites</button>
+
+  <h2>GUARDED SITES</h2>
+  <ul id="sites" class="list"></ul>
+  <form id="addSite" class="add">
+    <input id="siteInput" type="text" placeholder="e.g. youtube.com" autocomplete="off">
+    <button type="submit" class="ghost">Add</button>
+  </form>
+
+  <h2>QUICK CHECK LENGTH</h2>
+  <div id="quickMinutes" class="chips"></div>
+
+  <h2>INSTEAD OF SCROLLING</h2>
+  <ul id="alternatives" class="list"></ul>
+  <form id="addAlternative" class="add">
+    <input id="alternativeInput" type="text" placeholder="Add something you'd rather do" autocomplete="off">
+    <button type="submit" class="ghost">Add</button>
+  </form>
+
+  <script src="common.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

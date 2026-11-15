@@ -34,3 +34,6 @@ Thumbs.db
 *.aab
 *.ap_
 *.idsig
+
+# Browser extension builds
+extension/dist/
